@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Apply — __JOB_TITLE__ | Parakkat Group</title>
+<style>
+  :root{ --ink:#1c1a17; --muted:#6b665e; --line:#e7e3da; --brand:#7c5a2e; --brand-d:#5e4321; --bg:#faf8f3; --ok:#0f6e56; --okbg:#e1f5ee; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  .wrap{max-width:560px;margin:0 auto;padding:24px 20px 56px}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+  .logo{width:38px;height:38px;border-radius:9px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px;letter-spacing:.5px}
+  .brand b{font-size:15px;font-weight:600}
+  .brand span{display:block;font-size:11px;color:var(--muted);font-weight:400}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px}
+  h1{font-size:21px;margin:0 0 4px;font-weight:600}
+  .meta{font-size:13px;color:var(--muted);margin:0 0 18px}
+  .jd{font-size:13.5px;color:#46423b;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 20px}
+  .jd .skills{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11px;padding:3px 9px;border-radius:20px;background:#f1ece2;color:var(--brand-d)}
+  label{display:block;font-size:12px;font-weight:600;color:#46423b;margin:14px 0 5px}
+  input[type=text],input[type=email],input[type=tel]{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:#fff}
+  input:focus{outline:none;border-color:var(--brand)}
+  .drop{border:1.5px dashed #cfc7b6;border-radius:11px;padding:22px;text-align:center;cursor:pointer;transition:.15s;background:var(--bg)}
+  .drop.over{border-color:var(--brand);background:#fff}
+  .drop .big{font-size:14px;color:#46423b}
+  .drop .small{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .file{display:none;margin-top:10px;font-size:13px;color:var(--ok);background:var(--okbg);border-radius:8px;padding:8px 12px}
+  button{margin-top:22px;width:100%;padding:13px;border:none;border-radius:10px;background:var(--brand);color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.5;cursor:default}
+  button:hover:not(:disabled){background:var(--brand-d)}
+  .note{font-size:11px;color:var(--muted);margin-top:12px;text-align:center}
+  .done{text-align:center;padding:18px 4px}
+  .done .tick{width:54px;height:54px;border-radius:50%;background:var(--okbg);color:var(--ok);display:grid;place-items:center;font-size:28px;margin:0 auto 14px}
+  .done h2{font-size:19px;margin:0 0 6px;font-weight:600}
+  .done p{font-size:14px;color:var(--muted);margin:0}
+  .err{display:none;font-size:13px;color:#a32d2d;background:#fcebeb;border-radius:8px;padding:9px 12px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="logo">PG</div>
+    <div><b>Parakkat Group</b><span>Careers</span></div>
+  </div>
+
+  <div class="card" id="card">
+    <h1>__JOB_TITLE__</h1>
+    <p class="meta">__JOB_LOCATION__ · Full-time</p>
+    <div class="jd">
+      __JOB_DESC__
+      <div class="skills">__JOB_SKILLS__</div>
+    </div>
+
+    <label for="name">Full name</label>
+    <input type="text" id="name" placeholder="Your name" />
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="name@example.com" />
+    <label for="phone">Phone</label>
+    <input type="tel" id="phone" placeholder="+91 ..." />
+
+    <label>Resume (PDF or DOCX)</label>
+    <div class="drop" id="drop">
+      <div class="big">Tap to attach your CV</div>
+      <div class="small">PDF or DOCX, up to 10 MB</div>
+      <input type="file" id="cv" accept=".pdf,.docx,.doc" hidden />
+    </div>
+    <div class="file" id="fileName"></div>
+    <div class="err" id="err"></div>
+
+    <button id="submit" disabled>Submit application</button>
+    <div class="note">Your details go directly to the Parakkat hiring team.</div>
+  </div>
+</div>
+
+<script>
+  const JOB_ID = __JOB_ID__;
+  const cv = document.getElementById('cv');
+  const drop = document.getElementById('drop');
+  const fileName = document.getElementById('fileName');
+  const submit = document.getElementById('submit');
+  const err = document.getElementById('err');
+
+  function refresh(){
+    const ok = document.getElementById('name').value.trim()
+      && document.getElementById('email').value.trim()
+      && cv.files.length;
+    submit.disabled = !ok;
+  }
+  ['name','email','phone'].forEach(id=>document.getElementById(id).addEventListener('input',refresh));
+
+  drop.addEventListener('click',()=>cv.click());
+  drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over')});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+  drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');if(e.dataTransfer.files.length){cv.files=e.dataTransfer.files;showFile()}});
+  cv.addEventListener('change',showFile);
+  function showFile(){ if(cv.files.length){ fileName.textContent='✓ '+cv.files[0].name; fileName.style.display='block'; } refresh(); }
+
+  submit.addEventListener('click', async ()=>{
+    err.style.display='none';
+    submit.disabled=true; submit.textContent='Submitting…';
+    const fd=new FormData();
+    fd.append('job_id',JOB_ID);
+    fd.append('full_name',document.getElementById('name').value.trim());
+    fd.append('email',document.getElementById('email').value.trim());
+    fd.append('phone',document.getElementById('phone').value.trim());
+    fd.append('cv',cv.files[0]);
+    try{
+      const r=await fetch('/apply',{method:'POST',body:fd});
+      if(!r.ok){ const j=await r.json().catch(()=>({})); throw new Error(j.detail||'Submission failed'); }
+      document.getElementById('card').innerHTML=
+        '<div class="done"><div class="tick">✓</div><h2>Application received</h2>'+
+        '<p>Thank you. The Parakkat hiring team will review your CV and reach out if there\\'s a fit.</p></div>';
+    }catch(e){
+      err.textContent=e.message; err.style.display='block';
+      submit.disabled=false; submit.textContent='Submit application';
+    }
+  });
+</script>
+</body>
+</html>
