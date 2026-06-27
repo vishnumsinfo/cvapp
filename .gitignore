@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Local data — never commit these
+*.db
+cv_screener.db
+uploads/
+data/
+
+# Secrets
+.env
+
+# OS
+.DS_Store
